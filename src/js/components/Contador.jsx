@@ -28,16 +28,20 @@ const Contador = () => {
     return contador;
   };
 
-  //  Funcion para que funcione regresivamente el contador
-  /* const cuentaRegresiva = (value) => {
-    const {}
-    if (value <= 0 ) {
+  // Funcion para que funcione regresivamente el contador
+  const cuentaRegresiva = (objetoTiempo) => {
+    console.log("Valor recibido:", objetoTiempo);
+    const esCero =
+      JSON.stringify(objetoTiempo) === JSON.stringify(contadorCero);
+    console.log("Es cero:", esCero);
+    if (esCero) {
       alert("El numero no puede ser menor a cero");
       return;
     }
-    setInputValue({ ...contador, value });
-  }; */
-  //  Funcion para rteiniciar el contador
+    console.log("Estableciendo inputValue a:", objetoTiempo);
+    setInputValue(objetoTiempo);
+  };
+  //  Funcion para reiniciar el contador
   const reiniciar = () => {
     setContador({
       horasIzquierda: 0,
@@ -63,10 +67,8 @@ const Contador = () => {
     if (JSON.stringify(contador) === JSON.stringify(contadorCero)) {
       return true;
     }
-    return false;
   };
-  if (JSON.stringify(contador) === JSON.stringify(contadorCero)) {
-  }
+
   //  Ejecucion del intervalo del contador al montar el componente y al cambiar la dependencia incremento con su funcion limpiadora
   useEffect(() => {
     const intervaloId = setInterval(() => {
@@ -80,68 +82,124 @@ const Contador = () => {
             segundosIzquierda,
             segundosDerecha,
           } = prevcontador;
-          if (segundosDerecha < 9) {
-            return {
-              ...prevcontador,
-              segundosDerecha: segundosDerecha + incremento,
-            };
-          } else if (segundosIzquierda < 5) {
-            return {
-              ...prevcontador,
-              segundosIzquierda: segundosIzquierda + incremento,
-              segundosDerecha: 0,
-            };
-          } else if (minutosDerecha < 9) {
-            return {
-              ...prevcontador,
-              minutosDerecha: minutosDerecha + incremento,
-              segundosIzquierda: 0,
-              segundosDerecha: 0,
-            };
-          } else if (minutosIzquierda < 5) {
-            return {
-              ...prevcontador,
-              minutosIzquierda: minutosIzquierda + incremento,
-              minutosDerecha: 0,
-              segundosIzquierda: 0,
-              segundosDerecha: 0,
-            };
-          } else if (horasDerecha < 9) {
-            return {
-              ...prevcontador,
-              horasDerecha: horasDerecha + incremento,
-              minutosIzquierda: 0,
-              minutosDerecha: 0,
-              segundosIzquierda: 0,
-              segundosDerecha: 0,
-            };
+          // Si estamos en cuenta regresiva y llegamos a cero, detenemos
+          if (
+            incremento === -1 &&
+            comparacionContador(prevcontador, contadorCero)
+          ) {
+            alert("¡Tiempo finalizado!");
+            return contadorCero;
+          }
+          if (incremento === 1) {
+            // Lógica ascendente (igual que antes)
+            if (segundosDerecha < 9) {
+              return {
+                ...prevcontador,
+                segundosDerecha: segundosDerecha + incremento,
+              };
+            } else if (segundosIzquierda < 5) {
+              return {
+                ...prevcontador,
+                segundosIzquierda: segundosIzquierda + incremento,
+                segundosDerecha: 0,
+              };
+            } else if (minutosDerecha < 9) {
+              return {
+                ...prevcontador,
+                minutosDerecha: minutosDerecha + incremento,
+                segundosIzquierda: 0,
+                segundosDerecha: 0,
+              };
+            } else if (minutosIzquierda < 5) {
+              return {
+                ...prevcontador,
+                minutosIzquierda: minutosIzquierda + incremento,
+                minutosDerecha: 0,
+                segundosIzquierda: 0,
+                segundosDerecha: 0,
+              };
+            } else if (horasDerecha < 9) {
+              return {
+                ...prevcontador,
+                horasDerecha: horasDerecha + incremento,
+                minutosIzquierda: 0,
+                minutosDerecha: 0,
+                segundosIzquierda: 0,
+                segundosDerecha: 0,
+              };
+            } else {
+              return {
+                ...prevcontador,
+                horasIzquierda: horasIzquierda + incremento,
+                horasDerecha: 0,
+                minutosIzquierda: 0,
+                minutosDerecha: 0,
+                segundosIzquierda: 0,
+                segundosDerecha: 0,
+              };
+            }
           } else {
-            return {
-              ...prevcontador,
-              horasIzquierda: horasIzquierda + incremento,
-              horasDerecha: 0,
-              minutosIzquierda: 0,
-              minutosDerecha: 0,
-              segundosIzquierda: 0,
-              segundosDerecha: 0,
-            };
+            // Lógica descendente
+            if (segundosDerecha > 0) {
+              return { ...prevcontador, segundosDerecha: segundosDerecha - 1 };
+            } else if (segundosIzquierda > 0) {
+              return {
+                ...prevcontador,
+                segundosIzquierda: segundosIzquierda - 1,
+                segundosDerecha: 9,
+              };
+            } else if (minutosDerecha > 0) {
+              return {
+                ...prevcontador,
+                minutosDerecha: minutosDerecha - 1,
+                segundosIzquierda: 5,
+                segundosDerecha: 9,
+              };
+            } else if (minutosIzquierda > 0) {
+              return {
+                ...prevcontador,
+                minutosIzquierda: minutosIzquierda - 1,
+                minutosDerecha: 9,
+                segundosIzquierda: 5,
+                segundosDerecha: 9,
+              };
+            } else if (horasDerecha > 0) {
+              return {
+                ...prevcontador,
+                horasDerecha: horasDerecha - 1,
+                minutosIzquierda: 5,
+                minutosDerecha: 9,
+                segundosIzquierda: 5,
+                segundosDerecha: 9,
+              };
+            } else if (horasIzquierda > 0) {
+              return {
+                ...prevcontador,
+                horasIzquierda: horasIzquierda - 1,
+                horasDerecha: 9,
+                minutosIzquierda: 5,
+                minutosDerecha: 9,
+                segundosIzquierda: 5,
+                segundosDerecha: 9,
+              };
+            } else {
+              return contadorCero;
+            }
           }
         });
       }
     }, 1000);
-
     return () => clearInterval(intervaloId);
   }, [incremento]);
 
   //  Cambio de incrementar a decrementar cuando el inputValue sea igual al contador y si el contador llega a 0 vuelve a incrementar
   useEffect(() => {
-    if (inputValue !== null && contador === inputValue) {
-      alert("Alcanzaste el tiempo ingresado!");
+    if (
+      inputValue !== null &&
+      JSON.stringify(contador) === JSON.stringify(inputValue)
+    ) {
+      alert("¡Alcanzaste el tiempo ingresado!");
       setIncremento(-1);
-    }
-    if (comparacionContador) {
-      setIncremento(1);
-      setInputValue(null);
     }
   }, [contador, inputValue]);
 
@@ -163,7 +221,7 @@ const Contador = () => {
           </div>
         </div>
 
-        {<ImputsDelContador /* cuentaRegresiva={cuentaRegresiva} */ />}
+        {<ImputsDelContador cuentaRegresiva={cuentaRegresiva} />}
         <ButtonsDelContador
           reiniciar={reiniciar}
           detener={detener}

@@ -10,8 +10,25 @@ const ImputsDelContador = ({ cuentaRegresiva }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const timeParts = inputValue.split(":");
+    let hours = parseInt(timeParts[0], 10) || 0;
+    let minutes = parseInt(timeParts[1], 10) || 0;
+    let seconds = 0;
+
+    if (timeParts.length === 3) {
+      (seconds = parseInt(timeParts[2])), 10 || 0;
+    }
+    const objetoTiempo = {
+      horasIzquierda: Math.floor(hours / 10),
+      horasDerecha: hours % 10,
+      minutosIzquierda: Math.floor(minutes / 10),
+      minutosDerecha: minutes % 10,
+      segundosIzquierda: Math.floor(seconds / 10),
+      segundosDerecha: seconds % 10,
+    };
     console.log(event);
-    cuentaRegresiva(Number(inputValue));
+    console.log(objetoTiempo);
+    cuentaRegresiva(objetoTiempo);
   };
   return (
     <>
@@ -28,6 +45,7 @@ const ImputsDelContador = ({ cuentaRegresiva }) => {
               id="regresivo"
               name="regresivo"
               type="time"
+              step={1}
               value={inputValue}
               onChange={handleChange}
             />
